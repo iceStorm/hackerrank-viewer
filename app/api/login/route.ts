@@ -40,14 +40,18 @@ export async function POST(request: Request) {
     },
   )
 
-  console.log("login:", loginResponse.data)
+  let username: string | undefined
 
-  const { data: profileData } = await client.get("https://www.hackerrank.com/prefetch_data")
-  const username = profileData.profile.username
-  console.log("profile:", username)
+  // only fetch profile when logged in successfully
+  if (loginResponse.data.status === true) {
+    const { data: profileData } = await client.get("https://www.hackerrank.com/prefetch_data")
+    username = profileData.profile.username
+    console.log("username:", username)
+  }
 
+  // if login failed, get certs by username
   const certsResponse = await client.get(
-    `https://www.hackerrank.com/community/v1/test_results/hacker_certificate?username=${username}`,
+    `https://www.hackerrank.com/community/v1/test_results/hacker_certificate?username=${username ?? login}`,
   )
 
   const responseObj = Object.assign(loginResponse.data, {
@@ -65,4 +69,12 @@ async function getInitialCsrfToken(axiosClient: AxiosInstance) {
   const metaTag = page.window.document.querySelector('meta[id="csrf-token"]')
 
   return metaTag?.getAttribute("content")
+}
+
+async function getCertsWithUsername(username: string) {
+  const response = await fetch(
+    `https://www.hackerrank.com/community/v1/test_results/hacker_certificate?username=${username}`,
+  )
+
+  return response.json()
 }
