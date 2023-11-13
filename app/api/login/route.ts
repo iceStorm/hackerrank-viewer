@@ -5,6 +5,8 @@ import { JSDOM } from "jsdom"
 import { wrapper } from "axios-cookiejar-support"
 import { CookieJar } from "tough-cookie"
 
+import { Cert } from "../download/route"
+
 // 5 minute for each serverless function execution duration
 export const maxDuration = 300
 
@@ -30,7 +32,7 @@ export async function POST(request: Request) {
 
   // to get hackerrank hidden tokens and session id
   const initialCsrfToken = await getInitialCsrfToken(client)
-  console.log("initial csrf:", initialCsrfToken)
+  // console.log("initial csrf:", initialCsrfToken)
 
   const loginResponse = await client.post(
     "https://www.hackerrank.com/rest/auth/login",
@@ -51,11 +53,18 @@ export async function POST(request: Request) {
 
   // if login failed, get certs by username
   const certsResponse = await client.get(
-    `https://www.hackerrank.com/community/v1/test_results/hacker_certificate?username=${username ?? login}`,
+    `https://www.hackerrank.com/community/v1/test_results/hacker_certificate?username=${
+      username ?? login
+    }`,
   )
+
+  const passedCertNames = (certsResponse.data.data as Cert[])
+    .filter(cert => cert.attributes.status === "test_passed")
+    .map(cert => cert.attributes.certificates[0])
 
   const responseObj = Object.assign(loginResponse.data, {
     username,
+    passedCertNames,
     certs: certsResponse.data.data,
   })
 
@@ -69,12 +78,4 @@ async function getInitialCsrfToken(axiosClient: AxiosInstance) {
   const metaTag = page.window.document.querySelector('meta[id="csrf-token"]')
 
   return metaTag?.getAttribute("content")
-}
-
-async function getCertsWithUsername(username: string) {
-  const response = await fetch(
-    `https://www.hackerrank.com/community/v1/test_results/hacker_certificate?username=${username}`,
-  )
-
-  return response.json()
 }
