@@ -50,8 +50,10 @@ export async function GET(req: Request, res: Response) {
 
   const certs: Cert[] = (await response.json()).data
 
+  const passedCerts = certs.filter(cert => cert.attributes.status === "test_passed")
+
   const certImage = await Promise.all(
-    certs
+    passedCerts
       .filter(cert => cert.attributes.status === "test_passed")
       .map(async cert => {
         const image = await axios.get(cert.attributes.certificate_image!, {
@@ -65,7 +67,7 @@ export async function GET(req: Request, res: Response) {
 
   certImage.forEach((imageStream, index) => {
     zipper.addFile(
-      `${certs[index].id}__${certs[index].attributes.certificates[0]}.jpg`,
+      `${passedCerts[index].id}__${passedCerts[index].attributes.certificates[0]}.jpg`,
       Buffer.from(imageStream),
     )
   })

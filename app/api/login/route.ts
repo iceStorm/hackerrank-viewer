@@ -52,19 +52,24 @@ export async function POST(request: Request) {
   }
 
   // if login failed, get certs by username
-  const certsResponse = await client.get(
+  const certsResponse = await client.get<{ data: Cert[] }>(
     `https://www.hackerrank.com/community/v1/test_results/hacker_certificate?username=${
       username ?? login
     }`,
   )
 
-  const passedCertNames = (certsResponse.data.data as Cert[])
+  const passedCertNames = certsResponse.data.data
     .filter(cert => cert.attributes.status === "test_passed")
+    .map(cert => cert.attributes.certificates[0])
+
+  const failedCertNames = certsResponse.data.data
+    .filter(cert => cert.attributes.status === "test_failed")
     .map(cert => cert.attributes.certificates[0])
 
   const responseObj = Object.assign(loginResponse.data, {
     username,
     passedCertNames,
+    failedCertNames,
     certs: certsResponse.data.data,
   })
 
