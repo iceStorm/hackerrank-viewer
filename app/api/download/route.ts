@@ -53,22 +53,22 @@ export async function GET(req: Request, res: Response) {
   const passedCerts = certs.filter(cert => cert.attributes.status === "test_passed")
 
   const certImage = await Promise.all(
-    passedCerts
-      .filter(cert => cert.attributes.status === "test_passed")
-      .map(async cert => {
-        const image = await axios.get(cert.attributes.certificate_image!, {
-          responseType: "arraybuffer",
-        })
-        return image.data
-      }),
+    passedCerts.map(async cert => {
+      const { data: imageBuffer } = await axios.get<ArrayBuffer>(
+        cert.attributes.certificate_image!,
+        { responseType: "arraybuffer" },
+      )
+
+      return imageBuffer
+    }),
   )
 
   const zipper = new AdmZip()
 
-  certImage.forEach((imageStream, index) => {
+  certImage.forEach((imageBuffer, index) => {
     zipper.addFile(
       `${passedCerts[index].id}__${passedCerts[index].attributes.certificates[0]}.jpg`,
-      Buffer.from(imageStream),
+      Buffer.from(imageBuffer),
     )
   })
 
