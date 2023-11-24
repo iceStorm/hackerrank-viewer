@@ -1,11 +1,11 @@
-import axios, { AxiosInstance } from "axios"
+import { AxiosInstance } from "axios"
 
 import { JSDOM } from "jsdom"
 
 import { wrapper } from "axios-cookiejar-support"
 import { CookieJar } from "tough-cookie"
-
-import { Cert } from "../download/route"
+import { Cert } from "@/app/models/Cert"
+import { getHttpClient } from "@/app/(utils)/httpClient"
 
 // 5 minute for each serverless function execution duration
 export const maxDuration = 300
@@ -16,23 +16,12 @@ export async function OPTIONS() {
 
 export async function POST(request: Request) {
   const { login, password } = await request.json()
-  // console.log(username, password)
 
   const jar = new CookieJar()
-  const client = wrapper(
-    axios.create({
-      jar,
-      timeout: 60000,
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-      },
-    }),
-  )
+  const client = wrapper(getHttpClient({ jar }))
 
   // to get hackerrank hidden tokens and session id
   const initialCsrfToken = await getInitialCsrfToken(client)
-  // console.log("initial csrf:", initialCsrfToken)
 
   const loginResponse = await client.post(
     "https://www.hackerrank.com/rest/auth/login",
