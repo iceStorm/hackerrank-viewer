@@ -11,6 +11,7 @@ import { RiProhibitedLine } from "react-icons/ri"
 import { TbWorldShare } from "react-icons/tb"
 import { FaCode } from "react-icons/fa6"
 import { FiLink } from "react-icons/fi"
+import { PiWarningFill } from "react-icons/pi"
 
 import { getCertBackgroundName, getCerts, getProfile } from "../../_utils/hackerrank-api"
 
@@ -91,7 +92,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
               "text-lime-700 dark:text-lime-50",
               "rounded-full",
               "px-5 py-0.5",
-              "text-xs",
+              "text-xs font-medium",
             )}
           >
             {response.profile.username}
@@ -124,8 +125,10 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                   })}
                 />
               ) : cert.attributes.status === "test_failed" ? (
-                <RiProhibitedLine size={30} className={clsx("text-red-500")} />
-              ) : null // retake available
+                <RiProhibitedLine size={30} className={clsx("text-rose-500")} />
+              ) : (
+                <PiWarningFill size={30} className={clsx("text-amber-500")} />
+              )
 
             const statusText =
               cert.attributes.status === "test_passed"
@@ -138,7 +141,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
               <div
                 key={cert.id}
                 className={clsx(
-                  "bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-md",
+                  "bg-white dark:bg-stone-900 border dark:border-stone-700 dark:border-opacity-75 rounded-md",
                   "relative",
                   "p-5",
                   "flex flex-col justify-between",
@@ -148,17 +151,17 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                   <div className="flex items-center" style={{ height: 30 }}>
                     {badgeIcon}
 
-                    {cert.attributes.status === "retake_available" && (
+                    {/* {cert.attributes.status === "retake_available" && (
                       <span className={clsx("text-xs")}>
                         Last attemp: {format(new Date(cert.attributes.completed_at), "dd-MM-yyyy")}
                       </span>
-                    )}
+                    )} */}
                   </div>
 
                   <div
                     title="Scores"
                     className={clsx("ribbon", "text-sm font-bold py-2", {
-                      "bg-green-200 dark:bg-green-700 text-green-700 dark:text-gray-50":
+                      "bg-green-300 dark:bg-green-700 text-green-700 dark:text-gray-50":
                         cert.attributes.status === "test_passed" &&
                         cert.attributes.type === "skill",
 
@@ -178,26 +181,51 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                   <section className="mt-5">
                     <p
                       className={clsx("font-semibold", {
-                        "bg-gradient-to-r from-blue-600 to-blue-200 text-transparent bg-clip-text":
+                        "bg-gradient-to-r from-blue-600 to-blue-600 text-transparent bg-clip-text":
                           cert.attributes.status === "test_passed" &&
                           cert.attributes.type === "role",
 
-                        "bg-gradient-to-r from-green-600 to-green-200 text-transparent bg-clip-text":
+                        "bg-gradient-to-r from-green-600 to-green-600 text-transparent bg-clip-text":
                           cert.attributes.status === "test_passed" &&
                           cert.attributes.type === "skill",
 
-                        "bg-gradient-to-r from-red-600 to-red-300 text-transparent bg-clip-text inline-block":
+                        "bg-gradient-to-r from-rose-600 to-rose-600 text-transparent bg-clip-text inline-block":
                           cert.attributes.status === "test_failed",
 
-                        "bg-gradient-to-r from-amber-600 to-amber-200 text-transparent bg-clip-text":
+                        "bg-gradient-to-r from-amber-600 to-amber-600 text-transparent bg-clip-text":
                           cert.attributes.status === "retake_available",
                       })}
                     >
                       {cert.attributes.certificates[0].replace(" ()", "")}
                     </p>
 
-                    <div className="flex items-center text-[10px] gap-5">
-                      <span className="uppercase font-medium">{cert.attributes.type}</span>
+                    <div
+                      className={clsx(
+                        "flex items-center text-[10px] gap-2 mt-2",
+                        "text-stone-500 dark:text-stone-400",
+                      )}
+                    >
+                      <span
+                        title="Certificate type"
+                        className={clsx(
+                          "uppercase font-medium",
+                          "border dark:border-stone-600 rounded-sm",
+                          "px-3 py-1",
+                        )}
+                      >
+                        {cert.attributes.type}
+                      </span>
+
+                      <span
+                        title="Completed date"
+                        className={clsx(
+                          "uppercase font-medium",
+                          "border dark:border-stone-600 rounded-sm",
+                          "px-3 py-1",
+                        )}
+                      >
+                        {format(new Date(cert.attributes.completed_at), "dd-MM-yyyy")}
+                      </span>
                     </div>
 
                     <p className={clsx("text-xs opacity-50", "mt-5")}>
