@@ -31,7 +31,7 @@ export interface Attributes {
 export interface Certificate {
   track_slug: string
   label: string
-  level: string
+  level: "Basic" | "Intermediate" | "Advanced"
   skill_unique_id: string
   description: string
 }

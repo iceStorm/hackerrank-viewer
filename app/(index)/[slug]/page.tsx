@@ -12,6 +12,27 @@ import { TbWorldShare } from "react-icons/tb"
 import { FaCode } from "react-icons/fa6"
 import { FiLink } from "react-icons/fi"
 import { PiWarningFill } from "react-icons/pi"
+import { PiTrophyDuotone } from "react-icons/pi"
+import { PiWarningDuotone } from "react-icons/pi"
+import { PiXCircleDuotone } from "react-icons/pi"
+import { PiShieldCheckDuotone } from "react-icons/pi"
+import { PiSealCheckDuotone } from "react-icons/pi"
+
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 import { getCertBackgroundName, getCerts, getProfile } from "../../_utils/hackerrank-api"
 
@@ -116,18 +137,26 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
           {response.certs.map(cert => {
             const badgeIcon =
               cert.attributes.status === "test_passed" ? (
-                <FaAward
+                <PiSealCheckDuotone
                   size={30}
-                  className={clsx({
-                    "text-green-600": cert.attributes.type === "skill",
+                  className={clsx("-ml-1", {
+                    "text-blue-600 dark:text-blue-500": cert.attributes.type === "role",
 
-                    "text-blue-600": cert.attributes.type === "role",
+                    "text-green-600":
+                      cert.attributes.type === "skill" &&
+                      cert.attributes.certificate.level === "Basic",
+                    "text-amber-600":
+                      cert.attributes.type === "skill" &&
+                      cert.attributes.certificate.level === "Intermediate",
+                    "text-violet-600 dark:text-violet-500":
+                      cert.attributes.type === "skill" &&
+                      cert.attributes.certificate.level === "Advanced",
                   })}
                 />
               ) : cert.attributes.status === "test_failed" ? (
-                <RiProhibitedLine size={30} className={clsx("text-rose-500")} />
+                <PiXCircleDuotone size={30} className={clsx("text-rose-500 -ml-1")} />
               ) : (
-                <PiWarningFill size={30} className={clsx("text-amber-500")} />
+                <PiWarningDuotone size={30} className={clsx("text-gray-500")} />
               )
 
             const statusText =
@@ -150,53 +179,71 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                 <section>
                   <div className="flex items-center" style={{ height: 30 }}>
                     {badgeIcon}
-
-                    {/* {cert.attributes.status === "retake_available" && (
-                      <span className={clsx("text-xs")}>
-                        Last attemp: {format(new Date(cert.attributes.completed_at), "dd-MM-yyyy")}
-                      </span>
-                    )} */}
                   </div>
 
                   <div
-                    title="Scores"
-                    className={clsx("ribbon", "text-sm font-bold py-2", {
-                      "bg-green-300 dark:bg-green-700 text-green-700 dark:text-gray-50":
-                        cert.attributes.status === "test_passed" &&
-                        cert.attributes.type === "skill",
+                    title="Certificate level"
+                    className={clsx(
+                      "ribbon",
+                      "text-[10px] font-semibold uppercase py-2 dark:text-gray-50",
+                      {
+                        "bg-green-300 dark:bg-green-700 text-green-700":
+                          cert.attributes.status === "test_passed" &&
+                          cert.attributes.type === "skill" &&
+                          cert.attributes.certificate.level === "Basic",
+                        "bg-amber-200 dark:bg-amber-700 text-amber-800":
+                          cert.attributes.status === "test_passed" &&
+                          cert.attributes.type === "skill" &&
+                          cert.attributes.certificate.level === "Intermediate",
+                        "bg-violet-200 dark:bg-violet-700 text-violet-700":
+                          cert.attributes.status === "test_passed" &&
+                          cert.attributes.type === "skill" &&
+                          cert.attributes.certificate.level === "Advanced",
 
-                      "bg-blue-200 dark:bg-blue-700 text-blue-700 dark:text-gray-50":
-                        cert.attributes.status === "test_passed" && cert.attributes.type === "role",
+                        "bg-blue-200 dark:bg-blue-700 text-blue-700":
+                          cert.attributes.status === "test_passed" &&
+                          cert.attributes.type === "role",
 
-                      "bg-rose-200 dark:bg-rose-700 text-rose-700 dark:text-gray-50":
-                        cert.attributes.status === "test_failed",
+                        "bg-rose-200 dark:bg-rose-700 text-rose-700":
+                          cert.attributes.status === "test_failed",
 
-                      "bg-amber-200 dark:bg-amber-700 text-amber-700 dark:text-gray-50":
-                        cert.attributes.status === "retake_available",
-                    })}
+                        "bg-gray-200 dark:bg-gray-700 text-gray-700":
+                          cert.attributes.status === "retake_available",
+                      },
+                    )}
                   >
-                    {cert.attributes.score}
+                    {cert.attributes.certificate.level.length
+                      ? cert.attributes.certificate.level
+                      : cert.attributes.type}
                   </div>
 
                   <section className="mt-5">
                     <p
                       className={clsx("font-semibold", {
-                        "bg-gradient-to-r from-blue-600 to-blue-600 text-transparent bg-clip-text":
+                        "text-blue-600 dark:text-blue-500":
                           cert.attributes.status === "test_passed" &&
                           cert.attributes.type === "role",
 
-                        "bg-gradient-to-r from-green-600 to-green-600 text-transparent bg-clip-text":
+                        "text-green-600":
                           cert.attributes.status === "test_passed" &&
-                          cert.attributes.type === "skill",
+                          cert.attributes.type === "skill" &&
+                          cert.attributes.certificate.level === "Basic",
+                        "text-amber-600":
+                          cert.attributes.status === "test_passed" &&
+                          cert.attributes.type === "skill" &&
+                          cert.attributes.certificate.level === "Intermediate",
+                        "text-violet-600 dark:text-violet-500":
+                          cert.attributes.status === "test_passed" &&
+                          cert.attributes.type === "skill" &&
+                          cert.attributes.certificate.level === "Advanced",
 
-                        "bg-gradient-to-r from-rose-600 to-rose-600 text-transparent bg-clip-text inline-block":
-                          cert.attributes.status === "test_failed",
+                        "text-rose-600": cert.attributes.status === "test_failed",
 
-                        "bg-gradient-to-r from-amber-600 to-amber-600 text-transparent bg-clip-text":
+                        "text-gray-600 dark:text-gray-400":
                           cert.attributes.status === "retake_available",
                       })}
                     >
-                      {cert.attributes.certificates[0].replace(" ()", "")}
+                      {cert.attributes.certificate.label}
                     </p>
 
                     <div
@@ -206,17 +253,6 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                       )}
                     >
                       <span
-                        title="Certificate type"
-                        className={clsx(
-                          "uppercase font-medium",
-                          "border dark:border-stone-600 rounded-sm",
-                          "px-3 py-1",
-                        )}
-                      >
-                        {cert.attributes.type}
-                      </span>
-
-                      <span
                         title="Completed date"
                         className={clsx(
                           "uppercase font-medium",
@@ -225,6 +261,28 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                         )}
                       >
                         {format(new Date(cert.attributes.completed_at), "dd-MM-yyyy")}
+                      </span>
+
+                      <span
+                        title="Scores"
+                        className={clsx(
+                          "uppercase font-medium",
+                          "border dark:border-stone-600 rounded-sm",
+                          "px-3 py-1",
+                        )}
+                      >
+                        {cert.attributes.score}
+                      </span>
+
+                      <span
+                        title="Certificate genre"
+                        className={clsx(
+                          "capitalize font-medium text-[10px]",
+                          "border dark:border-stone-600 rounded-sm",
+                          "px-3 py-1",
+                        )}
+                      >
+                        {cert.attributes.type}
                       </span>
                     </div>
 
@@ -241,18 +299,25 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                   src={`https://hrcdn.net/s3_pub/hr-assets/dashboard/${getCertBackgroundName(
                     cert,
                   )}.svg`}
-                  className={clsx("absolute bottom-2 right-3", "grayscale opacity-50")}
+                  className={clsx("absolute bottom-2 right-3", "grayscale opacity-20")}
                 />
 
                 <section className={clsx("flex items-center gap-5 lg:gap-2 mt-10")}>
                   {cert.attributes.status === "test_passed" && (
                     <>
-                      <button
-                        className="opacity-50 hover:opacity-100"
-                        title="Download certificate image"
-                      >
-                        <IoImageOutline size={20} />
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          className="opacity-50 hover:opacity-100"
+                          title="Download certificate image"
+                        >
+                          <IoImageOutline size={20} />
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent>
+                          <DropdownMenuItem>JPG (low quality, small size)</DropdownMenuItem>
+                          <DropdownMenuItem>PNG (high quality, large size)</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
 
                       <button
                         className="opacity-50 hover:opacity-100"
@@ -296,7 +361,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                   {cert.attributes.status === "retake_available" && (
                     <span
                       className={clsx(
-                        "bg-amber-200 dark:bg-amber-700 text-amber-700 dark:text-white",
+                        "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white",
                         "rounded-full",
                         "text-xs",
                         "px-5 py-1",

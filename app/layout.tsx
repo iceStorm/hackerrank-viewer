@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           inter.className,
           "flex flex-col",
           "min-h-screen",
-          "bg-gray-50 dark:bg-stone-950",
+          "bg-gray-100 dark:bg-stone-950",
         )}
       >
         {/* {children} */}
