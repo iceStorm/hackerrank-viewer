@@ -1,5 +1,5 @@
-import { Cert } from "../models/Cert"
-import { Profile } from "../models/Profile"
+import { Cert } from "../_models/Cert"
+import { Profile } from "../_models/Profile"
 import { getHttpClient } from "./httpClient"
 
 export async function getCerts(username: string) {

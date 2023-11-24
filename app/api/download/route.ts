@@ -2,7 +2,7 @@ import axios from "axios"
 import AdmZip from "adm-zip"
 import { format } from "date-fns"
 
-import { Cert } from "@/app/models/Cert"
+import { Cert } from "@/app/_models/Cert"
 
 export async function GET(req: Request, res: Response) {
   const searchParams = new URLSearchParams(new URL(req.url).search)

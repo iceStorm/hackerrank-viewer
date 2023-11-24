@@ -1,11 +1,13 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import { Inter } from "next/font/google"
 
 import { clsx } from "clsx"
 
 import "./styles.scss"
+import { ThemeProvider } from "./_components/ThemeProvider"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["vietnamese"] })
 
 export const metadata: Metadata = {
   title: "HackerRank Viewer",
@@ -14,13 +16,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={clsx(inter.className, "flex flex-col", "min-h-screen")}>
-        <header></header>
-
-        <main className={clsx("flex-1")}>{children}</main>
-
-        <footer></footer>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={clsx(
+          inter.className,
+          "flex flex-col",
+          "min-h-screen",
+          "bg-gray-50 dark:bg-gray-900",
+        )}
+      >
+        {/* {children} */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

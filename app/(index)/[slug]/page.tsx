@@ -2,29 +2,23 @@ import { AxiosError } from "axios"
 
 import Image from "next/image"
 import clsx from "clsx"
+import { format } from "date-fns"
 
 import { FaAward } from "react-icons/fa"
-import { LiaAwardSolid } from "react-icons/lia"
-import { TbAwardOff } from "react-icons/tb"
-import { PiSealWarningLight } from "react-icons/pi"
 import { IoImageOutline } from "react-icons/io5"
 import { PiFilePdf } from "react-icons/pi"
-import { IoIosRibbon } from "react-icons/io"
 import { RiProhibitedLine } from "react-icons/ri"
-import { FaRegEye } from "react-icons/fa6"
 import { TbWorldShare } from "react-icons/tb"
-import { IoLink } from "react-icons/io5"
 import { FaCode } from "react-icons/fa6"
 import { FiLink } from "react-icons/fi"
 
-import { getCertBackgroundName, getCerts, getProfile } from "../(utils)/hackerrank-api"
+import { getCertBackgroundName, getCerts, getProfile } from "../../_utils/hackerrank-api"
 
-import { PageProps } from "../models/PageProps"
-import { Cert } from "../models/Cert"
-import { Profile } from "../models/Profile"
+import { PageProps } from "../../_models/PageProps"
+import { Cert } from "../../_models/Cert"
+import { Profile } from "../../_models/Profile"
 
 import "./certificate.scss"
-import { format } from "date-fns"
 
 export default async function ProfilePage({ params, searchParams }: PageProps) {
   const username = params.slug
@@ -57,7 +51,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
     response.profile?.avatar && !response.profile.avatar.endsWith("gravatar.jpg")
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="min-h-screen">
       <div className={clsx("container flex flex-col gap-10", "py-10")}>
         <section className={clsx("flex flex-col items-center")}>
           <div className="relative">
@@ -70,7 +64,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
               alt="user_avatar"
               width={100}
               height={100}
-              className={clsx("rounded-full border-4 border-white shadow-xl")}
+              className={clsx("rounded-full border-4 border-white dark:border-gray-700 shadow-xl")}
             />
 
             {!isUserAvatarAvailabel && (
@@ -93,8 +87,8 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
           <h2
             title="username"
             className={clsx(
-              "bg-lime-50 border-[1.5px] border-lime-500",
-              "text-lime-700",
+              "bg-lime-50 dark:bg-lime-900 border-[1.5px] border-lime-500",
+              "text-lime-700 dark:text-lime-50",
               "rounded-full",
               "px-5 py-0.5",
               "text-xs",
@@ -144,7 +138,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
               <div
                 key={cert.id}
                 className={clsx(
-                  "bg-white border rounded-md",
+                  "bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-md",
                   "relative",
                   "p-5",
                   "flex flex-col justify-between",
@@ -164,16 +158,18 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                   <div
                     title="Scores"
                     className={clsx("ribbon", "text-sm font-bold py-2", {
-                      "bg-green-200 text-green-700":
+                      "bg-green-200 dark:bg-green-700 text-green-700 dark:text-gray-50":
                         cert.attributes.status === "test_passed" &&
                         cert.attributes.type === "skill",
 
-                      "bg-blue-200 text-blue-700":
+                      "bg-blue-200 dark:bg-blue-700 text-blue-700 dark:text-gray-50":
                         cert.attributes.status === "test_passed" && cert.attributes.type === "role",
 
-                      "bg-rose-200 text-rose-700": cert.attributes.status === "test_failed",
+                      "bg-rose-200 dark:bg-rose-700 text-rose-700 dark:text-gray-50":
+                        cert.attributes.status === "test_failed",
 
-                      "bg-amber-200 text-amber-700": cert.attributes.status === "retake_available",
+                      "bg-amber-200 dark:bg-amber-700 text-amber-700 dark:text-gray-50":
+                        cert.attributes.status === "retake_available",
                     })}
                   >
                     {cert.attributes.score}
@@ -201,7 +197,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                     </p>
 
                     <div className="flex items-center text-[10px] gap-5">
-                      <span className="uppercase font-normal">{cert.attributes.type}</span>
+                      <span className="uppercase font-medium">{cert.attributes.type}</span>
                     </div>
 
                     <p className={clsx("text-xs opacity-50", "mt-5")}>
@@ -259,7 +255,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                   {cert.attributes.status === "test_failed" && (
                     <span
                       className={clsx(
-                        "bg-rose-100 text-rose-700",
+                        "bg-rose-100 dark:bg-rose-700 text-rose-700 dark:text-white",
                         "rounded-full",
                         "text-xs",
                         "px-5 py-1",
@@ -272,7 +268,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                   {cert.attributes.status === "retake_available" && (
                     <span
                       className={clsx(
-                        "bg-amber-200 text-amber-700",
+                        "bg-amber-200 dark:bg-amber-700 text-amber-700 dark:text-white",
                         "rounded-full",
                         "text-xs",
                         "px-5 py-1",

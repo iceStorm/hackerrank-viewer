@@ -4,8 +4,8 @@ import { JSDOM } from "jsdom"
 
 import { wrapper } from "axios-cookiejar-support"
 import { CookieJar } from "tough-cookie"
-import { Cert } from "@/app/models/Cert"
-import { getHttpClient } from "@/app/(utils)/httpClient"
+import { Cert } from "@/app/_models/Cert"
+import { getHttpClient } from "@/app/_utils/httpClient"
 
 // 5 minute for each serverless function execution duration
 export const maxDuration = 300

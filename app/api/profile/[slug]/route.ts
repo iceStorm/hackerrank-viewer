@@ -1,4 +1,4 @@
-import { getCerts, getProfile } from "@/app/(utils)/hackerrank-api"
+import { getCerts, getProfile } from "@/app/_utils/hackerrank-api"
 
 export async function GET(request: Request, { params }: { params: { slug: string } }) {
   const username = params.slug
