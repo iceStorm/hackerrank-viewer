@@ -75,63 +75,101 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
   return (
     <div className="min-h-screen">
       <div className={clsx("container flex flex-col gap-10", "py-10")}>
-        <section className={clsx("flex flex-col items-center")}>
-          <div className="relative">
-            <Image
-              src={
-                isUserAvatarAvailabel
-                  ? response.profile?.avatar
-                  : "https://hrcdn.net/fcore/assets/profile/default_avatar_bg-fba6466c4f.png"
-              }
-              alt="user_avatar"
-              width={100}
-              height={100}
-              className={clsx("rounded-full border-4 border-white dark:border-gray-700 shadow-xl")}
-            />
-
-            {!isUserAvatarAvailabel && (
-              <span
+        <section
+          className={clsx(
+            "w-full md:w-fit mx-auto",
+            "flex flex-col gap-10",
+            "bg-white dark:bg-stone-900",
+            "rounded-lg",
+            "border",
+            "p-5",
+          )}
+        >
+          <div className="flex flex-col items-center">
+            <div className="relative">
+              <Image
+                src={
+                  isUserAvatarAvailabel
+                    ? response.profile?.avatar
+                    : "https://hrcdn.net/fcore/assets/profile/default_avatar_bg-fba6466c4f.png"
+                }
+                alt="user_avatar"
+                width={100}
+                height={100}
                 className={clsx(
-                  "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-                  "text-white font-bold",
+                  "rounded-full border-4 border-white dark:border-gray-700 shadow-xl",
                 )}
-              >
-                {response.profile.personal_first_name?.[0]}
-                {response.profile.personal_last_name?.[0]}
-              </span>
-            )}
+              />
+
+              {!isUserAvatarAvailabel && (
+                <span
+                  className={clsx(
+                    "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+                    "text-white font-bold",
+                  )}
+                >
+                  {response.profile.personal_first_name?.[0]}
+                  {response.profile.personal_last_name?.[0]}
+                </span>
+              )}
+            </div>
+
+            <h1 title="Full name" className={clsx("font-semibold", "my-1 mt-3")}>
+              {response.profile.name}
+            </h1>
+
+            <h2
+              title="username"
+              className={clsx(
+                "bg-lime-50 dark:bg-lime-900 border-[1.5px] border-lime-500",
+                "text-lime-700 dark:text-lime-50",
+                "rounded-full",
+                "px-5 py-0.5",
+                "text-xs font-medium",
+              )}
+            >
+              {response.profile.username}
+            </h2>
           </div>
 
-          <h1 title="Full name" className={clsx("font-semibold", "my-1 mt-3")}>
-            {response.profile.name}
-          </h1>
-
-          <h2
-            title="username"
+          <div
             className={clsx(
-              "bg-lime-50 dark:bg-lime-900 border-[1.5px] border-lime-500",
-              "text-lime-700 dark:text-lime-50",
-              "rounded-full",
-              "px-5 py-0.5",
-              "text-xs font-medium",
+              "flex items-center lg:justify-center flex-wrap",
+              "gap-10 lg:gap-0",
+              "lg:divide-x lg:dark:divide-stone-700",
+              "text-xs lg:text-sm",
             )}
           >
-            {response.profile.username}
-          </h2>
-        </section>
+            <div className="lg:px-10">
+              <p className="font-extralight">Joined</p>
+              <p className={clsx("font-semibold")}>
+                {format(new Date(response.profile.created_at), "dd-MM-yyyy")}
+              </p>
+            </div>
 
-        <section className={clsx("bg-white")}>
-          <div></div>
+            <div className="lg:px-10">
+              <p className="font-extralight">Job title</p>
+              <p className={clsx("font-semibold")}>{response.profile.jobs_headline}</p>
+            </div>
 
-          <div></div>
+            <div className="lg:px-10">
+              <p className="font-extralight">Certificates</p>
+              <p className={clsx("font-semibold")}>{response.certs.length}</p>
+            </div>
 
-          <div></div>
+            <div className="lg:px-10">
+              <p className="font-extralight">Total certificates score</p>
+              <p className={clsx("font-semibold")}>
+                {response.certs.reduce((prev, current) => prev + current.attributes.score, 0)}
+              </p>
+            </div>
+          </div>
         </section>
 
         <section
           className={clsx("grid gap-10")}
           style={{
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
           }}
         >
           {response.certs.map(cert => {
