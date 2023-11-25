@@ -10,7 +10,7 @@ export interface Links {
 }
 
 export interface Attributes {
-  status: "test_passed" | "test_failed" | "retake_available"
+  status: "started" | "test_passed" | "test_failed" | "retake_available"
   username: string
   unlock_date?: string
   waived_off: any

@@ -8,7 +8,7 @@ export default function IndexLayout({ children }: { children: React.ReactNode })
     <>
       <header
         className={clsx(
-          "sticky top-0 z-10",
+          "sticky top-0 z-50",
           "bg-white dark:bg-stone-800 bg-opacity-75 dark:bg-opacity-50 backdrop-blur-md",
           "border-b dark:border-stone-800",
         )}
