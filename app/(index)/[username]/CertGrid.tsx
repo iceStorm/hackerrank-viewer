@@ -2,16 +2,10 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
+import { useRouter, useParams } from "next/navigation"
 
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuCheckboxItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 
 import clsx from "clsx"
 import { format } from "date-fns"
@@ -35,6 +29,9 @@ interface CertGridProps {
 }
 
 export function CertGrid({ certs }: CertGridProps) {
+  const router = useRouter()
+  const params = useParams()
+
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [selectedCertIds, setSelectedCertIds] = useState<string[]>([])
 
@@ -265,45 +262,63 @@ export function CertGrid({ certs }: CertGridProps) {
 
                 <section className={clsx("mt-10")}>
                   {cert.attributes.status === "test_passed" && (
-                    <div
-                      className={clsx("flex items-center gap-5 lg:gap-2", {
-                        "opacity-0": isSelectionMode,
-                      })}
-                    >
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          className="opacity-50 hover:opacity-100"
-                          title="Download certificate image"
-                        >
-                          <IoImageOutline size={20} />
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent>
-                          <DropdownMenuItem>JPG (low quality, small size)</DropdownMenuItem>
-                          <DropdownMenuItem>PNG (high quality, large size)</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-
-                      <button className="opacity-50 hover:opacity-100" title="Download certificate pdf">
-                        <PiFilePdf size={20} />
-                      </button>
-
-                      <a
-                        className="opacity-50 hover:opacity-100"
-                        title="View original certificate page"
-                        href={`https://www.hackerrank.com/certificates/${cert.id}`}
-                        target="_blank"
+                    <div className="flex items-center gap-5">
+                      <div
+                        className={clsx("flex items-center gap-5 lg:gap-2", {
+                          "opacity-0": isSelectionMode,
+                        })}
                       >
-                        <TbWorldShare size={20} />
-                      </a>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            className="opacity-50 hover:opacity-100"
+                            title="Download certificate image"
+                          >
+                            <IoImageOutline size={20} />
+                          </DropdownMenuTrigger>
 
-                      <button className="opacity-50 hover:opacity-100" title="Copy certificate url">
-                        <FiLink size={17} />
-                      </button>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem>JPG (low quality, small size)</DropdownMenuItem>
+                            <DropdownMenuItem>PNG (high quality, large size)</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
 
-                      <button className="opacity-50 hover:opacity-100" title="Copy iframe code">
-                        <IoCodeSlashOutline size={20} />
-                      </button>
+                        <button className="opacity-50 hover:opacity-100" title="Download certificate pdf">
+                          <PiFilePdf size={20} />
+                        </button>
+
+                        <a
+                          className="opacity-50 hover:opacity-100"
+                          title="View original certificate page"
+                          href={`https://www.hackerrank.com/certificates/${cert.id}`}
+                          target="_blank"
+                        >
+                          <TbWorldShare size={20} />
+                        </a>
+
+                        <button className="opacity-50 hover:opacity-100" title="Copy certificate url">
+                          <FiLink size={17} />
+                        </button>
+
+                        <button className="opacity-50 hover:opacity-100" title="Copy iframe code">
+                          <IoCodeSlashOutline size={20} />
+                        </button>
+                      </div>
+
+                      <div>
+                        <Link
+                          href={`/${params.username}/${cert.id}`}
+                          className={clsx(
+                            "text-[10px] uppercase font-medium",
+                            "rounded-full",
+                            "border dark:border-stone-700",
+                            "py-1 px-3",
+                            "hover:bg-stone-200 dark:hover:bg-stone-800",
+                          )}
+                          onClick={() => router.push("./" + cert.id)}
+                        >
+                          View
+                        </Link>
+                      </div>
                     </div>
                   )}
 
