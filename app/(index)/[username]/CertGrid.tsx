@@ -98,22 +98,15 @@ export function CertGrid({ certs }: CertGridProps) {
                 className={clsx("-ml-1", {
                   "text-blue-600 dark:text-blue-500": cert.attributes.type === "role",
 
-                  "text-green-600":
-                    cert.attributes.type === "skill" &&
-                    cert.attributes.certificate.level === "Basic",
+                  "text-green-600": cert.attributes.type === "skill" && cert.attributes.certificate.level === "Basic",
                   "text-amber-600":
-                    cert.attributes.type === "skill" &&
-                    cert.attributes.certificate.level === "Intermediate",
+                    cert.attributes.type === "skill" && cert.attributes.certificate.level === "Intermediate",
                   "text-violet-600 dark:text-violet-500":
-                    cert.attributes.type === "skill" &&
-                    cert.attributes.certificate.level === "Advanced",
+                    cert.attributes.type === "skill" && cert.attributes.certificate.level === "Advanced",
                 })}
               />
             ) : cert.attributes.status === "test_failed" ? (
-              <PiXCircleDuotone
-                size={30}
-                className={clsx("text-gray-500 dark:text-gray-400 -ml-1")}
-              />
+              <PiXCircleDuotone size={30} className={clsx("text-gray-500 dark:text-gray-400 -ml-1")} />
             ) : (
               <PiWarningDuotone size={30} className={clsx("text-cyan-500")} />
             )
@@ -164,35 +157,28 @@ export function CertGrid({ certs }: CertGridProps) {
 
                   <div
                     title="Certificate level"
-                    className={clsx(
-                      "ribbon",
-                      "text-[10px] font-semibold uppercase py-2 dark:text-gray-50",
-                      {
-                        "bg-green-300 dark:bg-green-700 text-green-700":
-                          cert.attributes.status === "test_passed" &&
-                          cert.attributes.type === "skill" &&
-                          cert.attributes.certificate.level === "Basic",
-                        "bg-amber-200 dark:bg-amber-700 text-amber-800":
-                          cert.attributes.status === "test_passed" &&
-                          cert.attributes.type === "skill" &&
-                          cert.attributes.certificate.level === "Intermediate",
-                        "bg-violet-200 dark:bg-violet-700 text-violet-700":
-                          cert.attributes.status === "test_passed" &&
-                          cert.attributes.type === "skill" &&
-                          cert.attributes.certificate.level === "Advanced",
+                    className={clsx("ribbon", "text-[10px] font-semibold uppercase py-2 dark:text-gray-50", {
+                      "bg-green-300 dark:bg-green-700 text-green-700":
+                        cert.attributes.status === "test_passed" &&
+                        cert.attributes.type === "skill" &&
+                        cert.attributes.certificate.level === "Basic",
+                      "bg-amber-200 dark:bg-amber-700 text-amber-800":
+                        cert.attributes.status === "test_passed" &&
+                        cert.attributes.type === "skill" &&
+                        cert.attributes.certificate.level === "Intermediate",
+                      "bg-violet-200 dark:bg-violet-700 text-violet-700":
+                        cert.attributes.status === "test_passed" &&
+                        cert.attributes.type === "skill" &&
+                        cert.attributes.certificate.level === "Advanced",
 
-                        "bg-blue-200 dark:bg-blue-700 text-blue-700":
-                          cert.attributes.status === "test_passed" &&
-                          cert.attributes.type === "role",
+                      "bg-blue-200 dark:bg-blue-700 text-blue-700":
+                        cert.attributes.status === "test_passed" && cert.attributes.type === "role",
 
-                        "bg-gray-200 dark:bg-gray-600 text-gray-700":
-                          cert.attributes.status === "test_failed",
+                      "bg-gray-200 dark:bg-gray-600 text-gray-700": cert.attributes.status === "test_failed",
 
-                        "bg-cyan-200 dark:bg-cyan-700 text-cyan-700":
-                          cert.attributes.status === "retake_available" ||
-                          cert.attributes.status === "started",
-                      },
-                    )}
+                      "bg-cyan-200 dark:bg-cyan-700 text-cyan-700":
+                        cert.attributes.status === "retake_available" || cert.attributes.status === "started",
+                    })}
                   >
                     {cert.attributes.certificate.level.length
                       ? cert.attributes.certificate.level
@@ -203,8 +189,7 @@ export function CertGrid({ certs }: CertGridProps) {
                     <p
                       className={clsx("font-semibold", {
                         "text-blue-600 dark:text-blue-500":
-                          cert.attributes.status === "test_passed" &&
-                          cert.attributes.type === "role",
+                          cert.attributes.status === "test_passed" && cert.attributes.type === "role",
 
                         "text-green-600":
                           cert.attributes.status === "test_passed" &&
@@ -219,21 +204,16 @@ export function CertGrid({ certs }: CertGridProps) {
                           cert.attributes.type === "skill" &&
                           cert.attributes.certificate.level === "Advanced",
 
-                        "text-gray-600 dark:text-gray-400":
-                          cert.attributes.status === "test_failed",
+                        "text-gray-600 dark:text-gray-400": cert.attributes.status === "test_failed",
 
-                        "text-cyan-500 dark:text-cyan-500":
-                          cert.attributes.status === "retake_available",
+                        "text-cyan-500 dark:text-cyan-500": cert.attributes.status === "retake_available",
                       })}
                     >
                       {cert.attributes.certificate.label}
                     </p>
 
                     <div
-                      className={clsx(
-                        "flex items-center text-[10px] gap-2 mt-2",
-                        "text-stone-500 dark:text-stone-400",
-                      )}
+                      className={clsx("flex items-center text-[10px] gap-2 mt-2", "text-stone-500 dark:text-stone-400")}
                     >
                       <span
                         title="Completed date"
@@ -279,9 +259,7 @@ export function CertGrid({ certs }: CertGridProps) {
                   alt="cert background"
                   width={50}
                   height={50}
-                  src={`https://hrcdn.net/s3_pub/hr-assets/dashboard/${getCertBackgroundName(
-                    cert,
-                  )}.svg`}
+                  src={`https://hrcdn.net/s3_pub/hr-assets/dashboard/${getCertBackgroundName(cert)}.svg`}
                   className={clsx("absolute bottom-2 right-3", "grayscale opacity-20")}
                 />
 
@@ -306,10 +284,7 @@ export function CertGrid({ certs }: CertGridProps) {
                         </DropdownMenuContent>
                       </DropdownMenu>
 
-                      <button
-                        className="opacity-50 hover:opacity-100"
-                        title="Download certificate pdf"
-                      >
+                      <button className="opacity-50 hover:opacity-100" title="Download certificate pdf">
                         <PiFilePdf size={20} />
                       </button>
 

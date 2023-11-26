@@ -31,10 +31,9 @@ export async function GET(req: Request, res: Response) {
 
   const certImage = await Promise.all(
     passedCerts.map(async cert => {
-      const { data: imageBuffer } = await axios.get<ArrayBuffer>(
-        cert.attributes.certificate_image!,
-        { responseType: "arraybuffer" },
-      )
+      const { data: imageBuffer } = await axios.get<ArrayBuffer>(cert.attributes.certificate_image!, {
+        responseType: "arraybuffer",
+      })
 
       return imageBuffer
     }),
@@ -44,10 +43,7 @@ export async function GET(req: Request, res: Response) {
 
   certImage.forEach((imageBuffer, index) => {
     zipper.addFile(
-      `${passedCerts[index].id}__${passedCerts[index].attributes.certificates[0].replace(
-        " ()",
-        "",
-      )}.jpg`,
+      `${passedCerts[index].id}__${passedCerts[index].attributes.certificates[0].replace(" ()", "")}.jpg`,
       Buffer.from(imageBuffer),
     )
   })

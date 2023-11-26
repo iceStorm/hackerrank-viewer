@@ -14,8 +14,8 @@ import { CertGrid } from "./CertGrid"
 import "./certificate.scss"
 import "./checkbox.scss"
 
-export default async function ProfilePage({ params, searchParams }: PageProps) {
-  const username = params.slug
+export default async function ProfilePage({ params, searchParams }: PageProps<{ username: string }>) {
+  const username = params.username
 
   let response: { certs: Cert[]; profile: Profile } = {} as never
 
@@ -41,8 +41,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
     return <div>{axiosError.message}</div>
   }
 
-  const isUserAvatarAvailabel =
-    response.profile?.avatar && !response.profile.avatar.endsWith("gravatar.jpg")
+  const isUserAvatarAvailabel = response.profile?.avatar && !response.profile.avatar.endsWith("gravatar.jpg")
 
   return (
     <div className="min-h-screen">
@@ -114,9 +113,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
           >
             <div className="lg:px-10">
               <p className="font-extralight">Joined</p>
-              <p className={clsx("font-semibold")}>
-                {format(new Date(response.profile.created_at), "dd-MM-yyyy")}
-              </p>
+              <p className={clsx("font-semibold")}>{format(new Date(response.profile.created_at), "dd-MM-yyyy")}</p>
             </div>
 
             <div className="lg:px-10">

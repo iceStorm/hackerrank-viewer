@@ -19,9 +19,7 @@ export async function getProfile(username: string) {
 }
 
 export function getCertBackgroundName(cert: Cert) {
-  const certName = cert.attributes.certificates[0]
-    .split(/\(Basic|\(Intermediate|\(Advanced/)[0]
-    .split("()")[0]
+  const certName = cert.attributes.certificates[0].split(/\(Basic|\(Intermediate|\(Advanced/)[0].split("()")[0]
 
   const words = certName.split(" ").filter(Boolean)
   const transformedWords = new Array<string>()
