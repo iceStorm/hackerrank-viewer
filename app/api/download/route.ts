@@ -1,60 +1,81 @@
-import axios from "axios"
 import AdmZip from "adm-zip"
 import { format } from "date-fns"
 
-import { Cert } from "@/app/_models/Cert"
+import { getCertImage, getCerts } from "@/app/_utils/hackerrank-api"
 
 export async function GET(req: Request, res: Response) {
-  const searchParams = new URLSearchParams(new URL(req.url).search)
-  const username = searchParams.get("username")
+  try {
+    const searchParams = new URLSearchParams(new URL(req.url).search)
+    const username = searchParams.get("username")
 
-  const response = await axios.get<{ data: Cert[] }>(
-    `https://www.hackerrank.com/community/v1/test_results/hacker_certificate?username=${username}`,
-    {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-      },
-    },
-  )
+    const allCerts = await getCerts(username!)
 
-  const passedCerts = response.data.data.filter(cert => cert.attributes.status === "test_passed")
+    const passedCerts = allCerts.filter(cert => !!cert.attributes.certificate_image)
 
-  if (!passedCerts.length) {
-    return Response.json({
-      username,
-      message:
-        "There is no data to download. You have typed the wrong HackerRank username, or your account does not contain any certificates.",
-      profile: `https://www.hackerrank.com/profile/${username}`,
+    // due to some unexpected reasons, some certs might be completed but the certificate_image is null
+    // we need to inform the user about these certs in a text file
+    const passedCertsWithoutImage = allCerts.filter(
+      cert => cert.attributes.status === "test_passed" && !cert.attributes.certificate_image,
+    )
+
+    // no certificates available
+    if (!passedCerts.length && !passedCertsWithoutImage.length) {
+      return Response.json({
+        username,
+        message:
+          "There is no data to download. You have typed the wrong HackerRank username, or your account does not contain any certificates.",
+        profile: `https://www.hackerrank.com/profile/${username}`,
+      })
+    }
+
+    // map all certificates image to buffer array
+    const certImageBufferList = await Promise.all(
+      passedCerts.map(async cert => {
+        return getCertImage(cert.attributes.certificate_image!)
+      }),
+    )
+
+    const zipper = new AdmZip()
+
+    certImageBufferList.forEach((imageBuffer, index) => {
+      zipper.addFile(
+        `${passedCerts[index].id}__${passedCerts[index].attributes.certificates[0].replace(" ()", "")}.jpg`,
+        Buffer.from(imageBuffer),
+      )
     })
-  }
 
-  const certImage = await Promise.all(
-    passedCerts.map(async cert => {
-      const { data: imageBuffer } = await axios.get<ArrayBuffer>(cert.attributes.certificate_image!, {
-        responseType: "arraybuffer",
+    // add the passed certs with no images reference link to a text file
+    if (passedCertsWithoutImage.length) {
+      const totalPassedCertCounts = allCerts.filter(cert => cert.attributes.status === "test_passed").length
+
+      let textFileData = `You have total ${totalPassedCertCounts} certificates. But ${
+        passedCertsWithoutImage.length
+      } of them ${
+        passedCertsWithoutImage.length === 1 ? "does" : "do"
+      } not have image. Please access the official links below to download ${
+        passedCertsWithoutImage.length === 1 ? "it" : "them"
+      } manually.\n\n`
+
+      passedCertsWithoutImage.forEach(cert => {
+        textFileData += `${cert.attributes.certificates[0].split(" ()")[0]}\n`
+        textFileData += `https://www.hackerrank.com/certificates/${cert.id}\n`
+
+        textFileData += "\n"
       })
 
-      return imageBuffer
-    }),
-  )
+      zipper.addFile("__README__CERTIFICATES_WITHOUT_IMAGE.txt", Buffer.from(textFileData))
+    }
 
-  const zipper = new AdmZip()
-
-  certImage.forEach((imageBuffer, index) => {
-    zipper.addFile(
-      `${passedCerts[index].id}__${passedCerts[index].attributes.certificates[0].replace(" ()", "")}.jpg`,
-      Buffer.from(imageBuffer),
-    )
-  })
-
-  return new Response(zipper.toBuffer(), {
-    headers: {
-      "content-type": "application/zip",
-      "Content-Disposition": `attachment; filename="${username}_hackerrank_certificates__${format(
-        new Date(),
-        "dd.MM.yyyy",
-      )}.zip"`,
-    },
-  })
+    return new Response(zipper.toBuffer(), {
+      headers: {
+        "content-type": "application/zip",
+        "Content-Disposition": `attachment; filename="${username}_hackerrank_certificates__${format(
+          new Date(),
+          "dd.MM.yyyy",
+        )}.zip"`,
+      },
+    })
+  } catch (error: any) {
+    return Response.json(error.message)
+  }
 }

@@ -2,20 +2,30 @@ import { Cert } from "../_models/Cert"
 import { Profile } from "../_models/Profile"
 import { getHttpClient } from "./httpClient"
 
+const httpClient = getHttpClient()
+
 export async function getCerts(username: string) {
-  const response = await getHttpClient().get<{ data: Cert[] }>(
+  const response = await httpClient.get<{ data: Cert[] }>(
     `https://www.hackerrank.com/community/v1/test_results/hacker_certificate?username=${username}`,
   )
 
-  return response.data
+  return response.data.data
 }
 
 export async function getProfile(username: string) {
-  const { data } = await getHttpClient().get<{ model: Profile }>(
+  const { data } = await httpClient.get<{ model: Profile }>(
     `https://www.hackerrank.com/rest/contests/master/hackers/${username}/profile`,
   )
 
   return data
+}
+
+export async function getCertImage(certImageUrl: string) {
+  const { data: imageBuffer } = await httpClient.get<ArrayBuffer>(certImageUrl, {
+    responseType: "arraybuffer",
+  })
+
+  return imageBuffer
 }
 
 export function getCertBackgroundName(cert: Cert) {
