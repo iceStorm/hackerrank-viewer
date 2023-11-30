@@ -8,7 +8,7 @@ import { Cert } from "@/app/_models/Cert"
 import { getHttpClient } from "@/app/_utils/httpClient"
 
 // 5 minute for each serverless function execution duration
-export const maxDuration = 300
+// export const maxDuration = 300
 
 export async function OPTIONS() {
   return Response.json([])

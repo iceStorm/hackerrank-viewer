@@ -1,25 +1,26 @@
+import Jimp from "jimp"
 import AdmZip from "adm-zip"
 import { format } from "date-fns"
 
-import { getCertImage, getCerts } from "@/app/_utils/hackerrank-api"
+import { generateCertificateImage, getCerts } from "@/app/_utils/hackerrank-api"
 
 export async function GET(req: Request, res: Response) {
   try {
     const searchParams = new URLSearchParams(new URL(req.url).search)
+
     const username = searchParams.get("username")
+    const certId = searchParams.get("cert")
+    const quality = parseInt(searchParams.get("quality") ?? "50", 10)
 
     const allCerts = await getCerts(username!)
+    const passedCerts = allCerts.filter(cert => cert.attributes.status === "test_passed")
 
-    const passedCerts = allCerts.filter(cert => !!cert.attributes.certificate_image)
-
-    // due to some unexpected reasons, some certs might be completed but the certificate_image is null
-    // we need to inform the user about these certs in a text file
-    const passedCertsWithoutImage = allCerts.filter(
-      cert => cert.attributes.status === "test_passed" && !cert.attributes.certificate_image,
-    )
+    if (!username) {
+      throw new Error("The 'username' query parameter is required in the url")
+    }
 
     // no certificates available
-    if (!passedCerts.length && !passedCertsWithoutImage.length) {
+    if (!passedCerts.length) {
       return Response.json({
         username,
         message:
@@ -28,47 +29,39 @@ export async function GET(req: Request, res: Response) {
       })
     }
 
-    // map all certificates image to buffer array
-    const certImageBufferList = await Promise.all(
-      passedCerts.map(async cert => {
-        return getCertImage(cert.attributes.certificate_image!)
-      }),
-    )
+    // handle single cert downloading
+    if (certId) {
+      const foundCert = passedCerts.find(cert => cert.id === certId)
+
+      if (!foundCert) {
+        throw new Error(`No certificate with id ${certId} available for user ${username}`)
+      }
+
+      return new Response(await generateCertificateImage(foundCert, quality, "buffer"), {
+        headers: {
+          "Content-Type": Jimp.MIME_JPEG,
+          "Content-Disposition": `attachment; filename="${username}_hackerrank_certificate__${foundCert.attributes.certificates[0].replace(
+            " ()",
+            "",
+          )}.jpg"`,
+        },
+      })
+    }
 
     const zipper = new AdmZip()
 
-    certImageBufferList.forEach((imageBuffer, index) => {
-      zipper.addFile(
-        `${passedCerts[index].id}__${passedCerts[index].attributes.certificates[0].replace(" ()", "")}.jpg`,
-        Buffer.from(imageBuffer),
-      )
-    })
-
-    // add the passed certs with no images reference link to a text file
-    if (passedCertsWithoutImage.length) {
-      const totalPassedCertCounts = allCerts.filter(cert => cert.attributes.status === "test_passed").length
-
-      let textFileData = `You have total ${totalPassedCertCounts} certificates. But ${
-        passedCertsWithoutImage.length
-      } of them ${
-        passedCertsWithoutImage.length === 1 ? "does" : "do"
-      } not have image. Please access the official links below to download ${
-        passedCertsWithoutImage.length === 1 ? "it" : "them"
-      } manually.\n\n`
-
-      passedCertsWithoutImage.forEach(cert => {
-        textFileData += `${cert.attributes.certificates[0].split(" ()")[0]}\n`
-        textFileData += `https://www.hackerrank.com/certificates/${cert.id}\n`
-
-        textFileData += "\n"
-      })
-
-      zipper.addFile("__README__CERTIFICATES_WITHOUT_IMAGE.txt", Buffer.from(textFileData))
-    }
+    // map all certificates image to buffer array
+    await Promise.all(
+      passedCerts.map(cert =>
+        generateCertificateImage(cert, quality, "buffer").then(imageBuffer => {
+          zipper.addFile(`${cert.id}__${cert.attributes.certificates[0].replace(" ()", "")}.jpg`, imageBuffer)
+        }),
+      ),
+    )
 
     return new Response(zipper.toBuffer(), {
       headers: {
-        "content-type": "application/zip",
+        "Content-Type": "application/zip",
         "Content-Disposition": `attachment; filename="${username}_hackerrank_certificates__${format(
           new Date(),
           "dd.MM.yyyy",

@@ -21,6 +21,7 @@
     "class-variance-authority": "^0.7.0",
     "cookie": "^0.6.0",
     "date-fns": "^2.30.0",
+    "jimp": "^0.22.10",
     "jsdom": "^22.1.0",
     "jspdf": "^2.5.1",
     "next": "14.0.2",
@@ -49,5 +50,8 @@
     "sass": "^1.69.5",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
+  },
+  "browser": {
+    "original-fs": false
   }
 }

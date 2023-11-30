@@ -1,15 +1,13 @@
-import { PageProps } from "@/app/_models/PageProps"
-
 import clsx from "clsx"
+import { format } from "date-fns"
 
 import { IoImageOutline } from "react-icons/io5"
 import { PiFilePdf } from "react-icons/pi"
 
-import { getCerts, getProfile } from "@/app/_utils/hackerrank-api"
-import { Button } from "@/components/ui/button"
+import { generateCertificateImage, getCerts, getProfile } from "@/app/_utils/hackerrank-api"
+import { PageProps } from "@/app/_models/PageProps"
 
-import { CertCanvas, CertCanvasRef } from "./CertCanvas"
-import { differenceInMinutes, format } from "date-fns"
+import { Button } from "@/components/ui/button"
 
 type Props = PageProps<{ cert_id: string; username: string }>
 
@@ -17,7 +15,8 @@ export default async function CertificatePage({ params, searchParams }: Props) {
   const certificateId = params.cert_id
 
   const [certs, profile] = await Promise.all([getCerts(params.username), getProfile(params.username)])
-  const theCert = certs.data.find(cert => cert.id === certificateId)
+
+  const theCert = certs.find(cert => cert.id === certificateId)
 
   if (!theCert) {
     return (
@@ -26,6 +25,8 @@ export default async function CertificatePage({ params, searchParams }: Props) {
       </div>
     )
   }
+
+  const certImageBase64 = await generateCertificateImage(theCert, 100, "base64")
 
   return (
     <div className={clsx("container py-10", "flex flex-col gap-10")}>
@@ -39,7 +40,7 @@ export default async function CertificatePage({ params, searchParams }: Props) {
 
       <section className={clsx("flex gap-10")}>
         <div className={clsx("flex-[1.618]")}>
-          <CertCanvas cert={theCert} userProfile={profile.model} />
+          <img src={certImageBase64} alt={theCert.attributes.certificates[0]} />
         </div>
 
         <aside className={clsx("flex-[1]", "flex flex-col gap-5")}>

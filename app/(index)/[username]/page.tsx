@@ -22,12 +22,12 @@ export default async function ProfilePage({ params, searchParams }: PageProps<{ 
   try {
     const [certs, profile] = await Promise.all([getCerts(username), getProfile(username)])
 
-    certs.data
+    certs
       .sort((a, b) => a.attributes.certificates[0].localeCompare(b.attributes.certificates[0]))
       .sort((a, b) => a.attributes.type.localeCompare(b.attributes.type))
 
     Object.assign(response, {
-      certs: certs.data,
+      certs,
       profile: profile.model,
     })
   } catch (error) {
