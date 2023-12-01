@@ -4,7 +4,7 @@ import { format } from "date-fns"
 import { IoImageOutline } from "react-icons/io5"
 import { PiFilePdf } from "react-icons/pi"
 
-import { generateCertificateImage, getCerts, getProfile } from "@/app/_utils/hackerrank-api"
+import { generateImageBase64, getCerts, getProfile } from "@/app/_utils/hackerrank-api"
 import { PageProps } from "@/app/_models/PageProps"
 
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ export default async function CertificatePage({ params, searchParams }: Props) {
     )
   }
 
-  const certImageBase64 = await generateCertificateImage(theCert, 100, "base64")
+  const certImageBase64 = await generateImageBase64(theCert, 100)
 
   return (
     <div className={clsx("container py-10", "flex flex-col gap-10")}>

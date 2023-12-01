@@ -2,7 +2,7 @@ import Jimp from "jimp"
 import AdmZip from "adm-zip"
 import { format } from "date-fns"
 
-import { generateCertificateImage, getCerts } from "@/app/_utils/hackerrank-api"
+import { generateImageBuffer, getCerts } from "@/app/_utils/hackerrank-api"
 
 export async function GET(req: Request, res: Response) {
   try {
@@ -37,7 +37,7 @@ export async function GET(req: Request, res: Response) {
         throw new Error(`No certificate with id ${certId} available for user ${username}`)
       }
 
-      return new Response(await generateCertificateImage(foundCert, quality, "buffer"), {
+      return new Response(await generateImageBuffer(foundCert, quality), {
         headers: {
           "Content-Type": Jimp.MIME_JPEG,
           "Content-Disposition": `attachment; filename="${username}_hackerrank_certificate__${foundCert.attributes.certificates[0].replace(
@@ -53,7 +53,7 @@ export async function GET(req: Request, res: Response) {
     // map all certificates image to buffer array
     await Promise.all(
       passedCerts.map(cert =>
-        generateCertificateImage(cert, quality, "buffer").then(imageBuffer => {
+        generateImageBuffer(cert, quality).then(imageBuffer => {
           zipper.addFile(`${cert.id}__${cert.attributes.certificates[0].replace(" ()", "")}.jpg`, imageBuffer)
         }),
       ),
